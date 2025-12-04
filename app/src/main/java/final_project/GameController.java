@@ -3,18 +3,21 @@ package final_project;
 public class GameController {
     private static int status; //-1: not started, 0: in progress, 1: ended
     private static int turn; //0: player1, 1: player2
-    private static String winner;
     public static Player currentPlayer;
     private static ComputerPlayer compPlayer;
     private static String[][] board;
     private static GameGraphic graphics;
+    private static String name;
 
-    GameController() {
+    GameController(boolean isNewGame){
         status = -1;
-        currentPlayer = new Player();      
-        compPlayer = new ComputerPlayer();
+
+        if(!isNewGame){ //if playing again
+            currentPlayer = new Player();      
+            compPlayer = new ComputerPlayer();
+            name = currentPlayer.getName();
+        }
         graphics = new GameGraphic();
-        //graphics.updateMessageBox(currentPlayer.getName()); get box to display name
         board = new String[3][3];
         //printBoard();
         
@@ -23,11 +26,11 @@ public class GameController {
         startGame();
     }
 
-    public static void startGame() {
+    public static void startGame(){
         status = 0;
         turn = 0;
         System.out.println("Game Started");
-        graphics.updateMessageBox();
+        graphics.updateMessageBox(name);
     }
 
     public static void changeTurn(){
@@ -47,13 +50,6 @@ public class GameController {
     
     public static int getStatus() {
         return status;
-    }
-
-    public static String getCurrentPlayerName() {
-        System.out.println("Getting Current Player Name: " + currentPlayer.getName());
-        return currentPlayer.getName();
-        
-        //return currentPlayer.getName();
     }
 
     public static void printBoard() {
@@ -79,6 +75,26 @@ public class GameController {
         }
         //printBoard();
         checkWin();
+        changeTurn();
+    }
+
+    private static void checkFullBoard() {
+        boolean isFull = true;
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                if(board[i][j] == null) {
+                    isFull = false;
+                    break;
+                }
+            }
+        }
+        
+        if(isFull && status != 1) {
+            status = 1; //game over
+            System.out.println("Game ended in a draw.");
+            graphics.gameOver("Draw");
+            turn = -1; //no more turns
+        }
     }
 
     private static void checkWin() {
@@ -114,10 +130,21 @@ public class GameController {
             }
         }
 
+        checkFullBoard();
+
         if(status == 1) {
             //Notify game graphic of game over
-            GameGraphic graphics = new GameGraphic();
-            graphics.gameOver(winner);
+            System.out.println("Turn" + turn + " wins!");
+            
+            if(turn == 0){
+                currentPlayer.incrementWinScore();
+            } else {
+                currentPlayer.incrementLossScore();
+            }
+
+            graphics.gameOver(turn == 0 ? "Player" : "Computer");
+            
+            turn = -1; //no more turns
         }
     }
 }
