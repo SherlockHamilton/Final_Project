@@ -73,15 +73,41 @@ public class GameGraphic extends JFrame implements ActionListener {
 					}
 				}
 			}
-
-			gameController.changeTurn();
 		}
     }
 
 	public void gameOver(String winner){
+		String outcome;
 		//System.out.println("Game Over");
-		JOptionPane.showMessageDialog(this, "Game Over");
+		if(winner.equals("Player")){
+			outcome = "You Win!";
+		} else if (winner.equals("Computer")){
+			outcome = "You Lose!";
+		} else {
+			outcome = "It's a Draw!";
+		}
+		
+		String[] options = {"Play again", "Done"};
+
+        // Show the option dialog
+        int choice = JOptionPane.showOptionDialog(
+                null, // Parent component (null = center on screen)
+                outcome, // Message
+                "Game Over", // Title
+                JOptionPane.YES_NO_OPTION, // Option type
+                JOptionPane.QUESTION_MESSAGE, // Message type
+                null, // Icon (null = default)
+                options, // Custom button labels
+                options[0] // Default selected button
+        );
 		this.dispose();
+
+		if(choice == JOptionPane.YES_OPTION){
+			new GameController(true);
+		} else {
+			GameController.currentPlayer.writeDataFile();
+			System.exit(0);
+		}
 	}
 
 	public void updateMessageBox(String name){
@@ -95,8 +121,6 @@ public class GameGraphic extends JFrame implements ActionListener {
 		JButton button = buttons[row][col];
 		button.setText("O");
 		button.setEnabled(false);
-
-		gameController.changeTurn();
 	}
 
 }
