@@ -1,6 +1,5 @@
 package final_project;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class ComputerPlayer{
     private int[] availableSpots;
